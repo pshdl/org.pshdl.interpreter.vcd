@@ -7,7 +7,7 @@ import org.pshdl.interpreter.*;
 
 import vcdEngine.*;
 import vcdEngine.VcdTimescale.UNIT_ENUM;
-import vcdEngine.VcdVariableManager.*;
+import vcdEngine.VcdVariableManager.VcdVariable;
 
 public class VCDCompareEngine {
 	private final String psPrefix;
@@ -41,13 +41,15 @@ public class VCDCompareEngine {
 			if (i.fullName.length() > psPrefix.length()) {
 				String fullName = i.fullName;
 				String vcdName = getVCDName(fullName);
-				if (i.actualWidth > 1)
+				if (i.actualWidth > 1) {
 					vcdName += "[0]";
+				}
 				VcdVariable var = toVar.get(vcdName);
-				if (var != null)
+				if (var != null) {
 					matched.add(i);
-				else
+				} else {
 					unmatched.add(i);
+				}
 			}
 		}
 	}
@@ -59,11 +61,11 @@ public class VCDCompareEngine {
 	}
 
 	public InternalInformation[] getMatched() {
-		return (InternalInformation[]) matched.toArray(new InternalInformation[matched.size()]);
+		return matched.toArray(new InternalInformation[matched.size()]);
 	}
 
 	public InternalInformation[] getUnmatched() {
-		return (InternalInformation[]) unmatched.toArray(new InternalInformation[matched.size()]);
+		return unmatched.toArray(new InternalInformation[matched.size()]);
 	}
 
 	public void advance() {
@@ -75,8 +77,9 @@ public class VCDCompareEngine {
 		for (InternalInformation ii : matched) {
 			BigInteger big = interpreter.getOutputBig(ii.fullName);
 			BigInteger build = getValue(ii);
-			if (!big.equals(build))
+			if (!big.equals(build)) {
 				System.out.printf("VCDCompareEngine.compareValues()%-70s vcd: 0x%X ps: 0x%X\n", ii.fullName, build, big);
+			}
 		}
 	}
 
@@ -84,13 +87,15 @@ public class VCDCompareEngine {
 		String vcdName = getVCDName(ii.fullName);
 		BigInteger build = BigInteger.ZERO;
 		if (ii.actualWidth == 1) {
-			if (getBit(vcdName))
+			if (getBit(vcdName)) {
 				build = build.setBit(0);
+			}
 		} else {
 			for (int i = 0; i < ii.actualWidth; i++) {
 				boolean bit = getBit(vcdName + '[' + i + ']');
-				if (bit)
+				if (bit) {
 					build = build.setBit(i);
+				}
 			}
 		}
 		return build;
@@ -99,14 +104,16 @@ public class VCDCompareEngine {
 	public boolean getBit(String vcdName) {
 		String value = toVar.get(vcdName).getValue();
 		boolean val = "1".equals(value);
-		if (!("0".equals(value) || "1".equals(value)))
+		if (!("0".equals(value) || "1".equals(value))) {
 			System.out.println("VCDCompareEngine.getBit() VCD:" + vcdName + " is actually:" + value);
+		}
 		return val;
 	}
 
 	public void advanceTo(InternalInformation ii, BigInteger val) {
 		advance();
-		while (!getValue(ii).equals(val))
+		while (!getValue(ii).equals(val)) {
 			advance();
+		}
 	}
 }
