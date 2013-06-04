@@ -16,8 +16,8 @@ public class VCDCompareEngine {
 	private final Set<InternalInformation> matched = new HashSet<InternalInformation>();
 	private final Set<InternalInformation> unmatched = new HashSet<InternalInformation>();
 	private final Map<String, VcdVariable> toVar = new HashMap<String, VcdVariable>();
-	private ExecutableModel em;
-	private VcdTimePeriod tp1;
+	private final ExecutableModel em;
+	private final VcdTimePeriod tp1;
 
 	public VCDCompareEngine(String file, ExecutableModel em, String psPrefix, String vcdPrefix) {
 		this.psPrefix = psPrefix;
@@ -32,19 +32,19 @@ public class VCDCompareEngine {
 		vcdFile.parseUntilNextTimestamp(tp1);
 		if (tp1.getCurrentTimestamp() != VcdTimePeriod.TIMESTAMP_INITIAL_VALUES)
 			throw new IllegalArgumentException("Expected initialValues");
-		VcdVariableManager varManager = vcdFile.getVarManager();
-		Set<String> fullRefs = varManager.getAllVarFullRefs();
-		for (String string : fullRefs) {
+		final VcdVariableManager varManager = vcdFile.getVarManager();
+		final Set<String> fullRefs = varManager.getAllVarFullRefs();
+		for (final String string : fullRefs) {
 			toVar.put(string.toLowerCase(), varManager.getVarByFullRef(string));
 		}
-		for (InternalInformation i : em.internals) {
+		for (final InternalInformation i : em.internals) {
 			if (i.fullName.length() > psPrefix.length()) {
-				String fullName = i.fullName;
+				final String fullName = i.fullName;
 				String vcdName = getVCDName(fullName);
 				if (i.actualWidth > 1) {
 					vcdName += "[0]";
 				}
-				VcdVariable var = toVar.get(vcdName);
+				final VcdVariable var = toVar.get(vcdName);
 				if (var != null) {
 					matched.add(i);
 				} else {
@@ -55,8 +55,8 @@ public class VCDCompareEngine {
 	}
 
 	public String getVCDName(String fullName) {
-		String shortName = fullName.substring(psPrefix.length()).replaceAll("_", ".").toLowerCase();
-		String vcdName = vcdPrefix + shortName;
+		final String shortName = fullName.substring(psPrefix.length()).replaceAll("_", ".").toLowerCase();
+		final String vcdName = vcdPrefix + shortName;
 		return vcdName;
 	}
 
@@ -74,9 +74,9 @@ public class VCDCompareEngine {
 	}
 
 	public void compareValues(IHDLInterpreter interpreter) {
-		for (InternalInformation ii : matched) {
-			BigInteger big = interpreter.getOutputBig(ii.fullName);
-			BigInteger build = getValue(ii);
+		for (final InternalInformation ii : matched) {
+			final BigInteger big = interpreter.getOutputBig(ii.fullName);
+			final BigInteger build = getValue(ii);
 			if (!big.equals(build)) {
 				System.out.printf("VCDCompareEngine.compareValues()%-70s vcd: 0x%X ps: 0x%X\n", ii.fullName, build, big);
 			}
@@ -84,7 +84,7 @@ public class VCDCompareEngine {
 	}
 
 	public BigInteger getValue(InternalInformation ii) {
-		String vcdName = getVCDName(ii.fullName);
+		final String vcdName = getVCDName(ii.fullName);
 		BigInteger build = BigInteger.ZERO;
 		if (ii.actualWidth == 1) {
 			if (getBit(vcdName)) {
@@ -92,7 +92,7 @@ public class VCDCompareEngine {
 			}
 		} else {
 			for (int i = 0; i < ii.actualWidth; i++) {
-				boolean bit = getBit(vcdName + '[' + i + ']');
+				final boolean bit = getBit(vcdName + '[' + i + ']');
 				if (bit) {
 					build = build.setBit(i);
 				}
@@ -102,8 +102,8 @@ public class VCDCompareEngine {
 	}
 
 	public boolean getBit(String vcdName) {
-		String value = toVar.get(vcdName).getValue();
-		boolean val = "1".equals(value);
+		final String value = toVar.get(vcdName).getValue();
+		final boolean val = "1".equals(value);
 		if (!("0".equals(value) || "1".equals(value))) {
 			System.out.println("VCDCompareEngine.getBit() VCD:" + vcdName + " is actually:" + value);
 		}
