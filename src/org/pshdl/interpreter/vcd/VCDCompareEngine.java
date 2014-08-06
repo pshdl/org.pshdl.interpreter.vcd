@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.pshdl.interpreter.ExecutableModel;
-import org.pshdl.interpreter.IHDLInterpreter;
+import org.pshdl.interpreter.IHDLBigInterpreter;
 import org.pshdl.interpreter.InternalInformation;
 
 import vcdEngine.VcdFileParser;
@@ -104,7 +104,7 @@ public class VCDCompareEngine {
 		System.out.println("VCDCompareEngine.advance()" + tp1.format(UNIT_ENUM.TS_NS) + " ns");
 	}
 
-	public void compareValues(IHDLInterpreter interpreter) {
+	public void compareValues(IHDLBigInterpreter interpreter) {
 		for (final InternalInformation ii : matched) {
 			final BigInteger big = interpreter.getOutputBig(ii.fullName);
 			final BigInteger build = getValue(ii);
