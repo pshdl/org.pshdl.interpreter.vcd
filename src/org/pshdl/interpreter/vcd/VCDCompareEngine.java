@@ -27,8 +27,8 @@
 package org.pshdl.interpreter.vcd;
 
 import java.math.BigInteger;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -46,9 +46,9 @@ public class VCDCompareEngine {
 	private final String psPrefix;
 	private final String vcdPrefix;
 	private final VcdFileParser vcdFile;
-	private final Set<InternalInformation> matched = new HashSet<InternalInformation>();
-	private final Set<InternalInformation> unmatched = new HashSet<InternalInformation>();
-	private final Map<String, VcdVariable> toVar = new HashMap<String, VcdVariable>();
+	private final Set<InternalInformation> matched = new LinkedHashSet<>();
+	private final Set<InternalInformation> unmatched = new LinkedHashSet<>();
+	private final Map<String, VcdVariable> toVar = new LinkedHashMap<>();
 	private final VcdTimePeriod tp1;
 
 	public VCDCompareEngine(String file, ExecutableModel em, String psPrefix, String vcdPrefix) {
